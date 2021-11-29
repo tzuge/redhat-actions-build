@@ -22,13 +22,13 @@ jobs:
         uses: redhat-actions/podman-login@v1
         with:
           registry: registry.redhat.io
-          username: ${{ secrets.redhat-io-username }}
-          password: ${{ secrets.redhat-io-password }}
+          username: ${{ secrets.REDHAT_IO_USERNAME }}
+          password: ${{ secrets.REDHAT_IO_PASSWORD }}
       - if: matrix.strategy == 'buildah'
         name: Buildah build image
         uses: redhat-actions/buildah-build@v2
         with:
-          base-image: ${{ registry.redhat.io }}/ubi8/nginx-118:latest
+          base-image: ${{ github.event.inputs.REGISTRY }}/ubi8/nginx-118:latest
           content: ./
           image: my-app
           tags: latest ${{ github.sha }}
@@ -36,6 +36,6 @@ jobs:
         name: S2i build image
         uses: redhat-actions/s2i-build@v2
         with:
-          builder_image: ${{ registry.redhat.io }}/ubi8/nginx-118:latest
+          builder_image: ${{ github.event.inputs.REGISTRY }}/ubi8/nginx-118:latest
           image: my-app
           tags: latest ${{ github.sha }}
