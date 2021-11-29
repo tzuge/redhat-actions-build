@@ -1,0 +1,41 @@
+
+name: Build containers
+
+on:
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+    inputs:
+      REGISTRY:
+        description: APP to run against.
+        default: registry.redhat.io
+        required: true
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        strategy: [buildah, s2i]
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Log in to Red Hat Registry
+        uses: redhat-actions/podman-login@v1
+        with:
+          registry: registry.redhat.io
+          username: ${{ secrets.redhat-io-username }}
+          password: ${{ secrets.redhat-io-password }}
+      - if: matrix.strategy == 'buildah'
+        name: Buildah build image
+        uses: redhat-actions/buildah-build@v2
+        with:
+          base-image: ${{ registry.redhat.io }}/ubi8/nginx-118:latest
+          content: ./
+          image: my-app
+          tags: latest ${{ github.sha }}
+      - if: matrix.strategy == 's2i'
+        name: S2i build image
+        uses: redhat-actions/s2i-build@v2
+        with:
+          builder_image: ${{ registry.redhat.io }}/ubi8/nginx-118:latest
+          image: my-app
+          tags: latest ${{ github.sha }}
