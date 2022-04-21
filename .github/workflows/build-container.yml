@@ -28,10 +28,11 @@ jobs:
         name: Buildah build image
         uses: redhat-actions/buildah-build@v2
         with:
-          base-image: ${{ github.event.inputs.REGISTRY }}/ubi8/nginx-118:latest
           content: ./
           image: my-app
           tags: latest ${{ github.sha }}
+          containerfiles: |
+           Dockerfile
       - if: matrix.strategy == 's2i'
         name: S2i build image
         uses: redhat-actions/s2i-build@v2
