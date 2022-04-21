@@ -18,6 +18,7 @@ jobs:
         strategy: [buildah, s2i]
     runs-on: ubuntu-20.04
     steps:
+      - uses: actions/checkout@v2
       - name: Log in to Red Hat Registry
         uses: redhat-actions/podman-login@v1
         with:
